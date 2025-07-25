@@ -270,9 +270,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Project Lead**: [Your Name]
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn Profile]
+- **Project Lead**:Soutrik Mukherjee
+- **Email**: soutrik.viratech@gmail.com
+- **LinkedIn**: https://www.linkedin.com/in/soutrik-mukherjee/
 - **Issues**: [GitHub Issues](https://github.com/yourusername/computer-vision-quality-control/issues)
 
 ---
