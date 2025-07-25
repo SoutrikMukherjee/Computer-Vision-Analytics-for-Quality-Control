@@ -1,0 +1,231 @@
+# Production Configuration for Computer Vision Quality Control System
+
+# Model Configuration
+model:
+  architecture: "EfficientNetV2-B3"
+  input_size: [224, 224]
+  num_classes: 15
+  pretrained: true
+  checkpoint_path: "models/defect_classifier_v2.h5"
+  
+  # Model optimization settings
+  optimization:
+    quantization: true
+    pruning_sparsity: 0.3
+    mixed_precision: true
+    
+  # Ensemble configuration
+  ensemble:
+    enabled: true
+    models:
+      - name: "primary"
+        path: "models/efficientnet_v2_b3.h5"
+        weight: 0.6
+      - name: "secondary"
+        path: "models/custom_cnn_v3.h5"
+        weight: 0.3
+      - name: "edge"
+        path: "models/mobilenet_v3.h5"
+        weight: 0.1
+
+# Data Pipeline Configuration
+preprocessing:
+  # Image preprocessing
+  resize_method: "bicubic"
+  normalization: "imagenet"
+  color_space: "RGB"
+  
+  # Data augmentation
+  augmentation:
+    enabled: true
+    rotation_range: 15
+    width_shift_range: 0.1
+    height_shift_range: 0.1
+    horizontal_flip: true
+    vertical_flip: false
+    zoom_range: 0.1
+    brightness_range: [0.8, 1.2]
+    
+  # Batch processing
+  batch_size: 32
+  prefetch_size: 4
+  num_parallel_calls: 8
+
+# Inference Configuration
+inference:
+  # GPU settings
+  gpu_enabled: true
+  gpu_memory_growth: true
+  gpu_device_id: 0
+  
+  # Performance settings
+  max_batch_size: 64
+  num_inference_threads: 4
+  use_tensorrt: true
+  
+  # Thresholds
+  confidence_threshold: 0.85
+  nms_threshold: 0.5
+  
+  # Caching
+  enable_caching: true
+  cache_size_mb: 512
+  cache_ttl_seconds: 3600
+
+# Quality Control Settings
+quality_control:
+  # Defect categories
+  defect_classes:
+    - "scratch"
+    - "dent"
+    - "crack"
+    - "stain"
+    - "hole"
+    - "deformation"
+    - "discoloration"
+    - "contamination"
+    - "misalignment"
+    - "missing_component"
+    - "excess_material"
+    - "texture_defect"
+    - "dimension_error"
+    - "surface_roughness"
+    - "other"
+    
+  # Alert thresholds
+  alert_thresholds:
+    critical_defect_rate: 0.02  # 2%
+    warning_defect_rate: 0.01   # 1%
+    batch_rejection_rate: 0.05  # 5%
+    
+  # Quality metrics
+  metrics:
+    track_false_positives: true
+    track_false_negatives: true
+    rolling_window_hours: 24
+
+# Data Storage Configuration
+storage:
+  # Image storage
+  image_storage:
+    type: "s3"  # Options: local, s3, azure, gcs
+    bucket: "quality-control-images"
+    retention_days: 90
+    compression: "jpeg"
+    quality: 85
+    
+  # Database
+  database:
+    type: "postgresql"
+    host: "${DB_HOST}"
+    port: 5432
+    name: "quality_control"
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    
+  # Cache
+  cache:
+    type: "redis"
+    host: "${REDIS_HOST}"
+    port: 6379
+    db: 0
+
+# Dashboard Configuration
+dashboard:
+  # Server settings
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  
+  # Update intervals
+  refresh_interval_seconds: 5
+  chart_update_interval: 30
+  
+  # Features
+  features:
+    real_time_monitoring: true
+    historical_analysis: true
+    predictive_maintenance: true
+    export_reports: true
+    email_alerts: true
+
+# Monitoring & Logging
+monitoring:
+  # Logging
+  log_level: "INFO"
+  log_format: "json"
+  log_rotation: "daily"
+  log_retention_days: 30
+  
+  # Metrics
+  enable_prometheus: true
+  prometheus_port: 9090
+  
+  # Tracing
+  enable_tracing: true
+  jaeger_endpoint: "${JAEGER_ENDPOINT}"
+  
+  # Health checks
+  health_check_interval: 60
+  health_check_timeout: 10
+
+# API Configuration
+api:
+  # REST API
+  rest:
+    enabled: true
+    version: "v1"
+    rate_limit: 1000  # requests per minute
+    cors_enabled: true
+    
+  # WebSocket
+  websocket:
+    enabled: true
+    max_connections: 100
+    heartbeat_interval: 30
+
+# Security
+security:
+  # Authentication
+  auth_enabled: true
+  jwt_secret: "${JWT_SECRET}"
+  token_expiry_hours: 24
+  
+  # Encryption
+  encrypt_at_rest: true
+  tls_enabled: true
+  
+  # Access control
+  rbac_enabled: true
+  default_role: "viewer"
+
+# Deployment
+deployment:
+  # Environment
+  environment: "production"
+  region: "us-east-1"
+  
+  # Scaling
+  auto_scaling:
+    enabled: true
+    min_instances: 2
+    max_instances: 10
+    target_cpu_percent: 70
+    
+  # High availability
+  multi_az: true
+  load_balancer: true
+  
+# Maintenance
+maintenance:
+  # Model updates
+  auto_retrain: true
+  retrain_schedule: "0 2 * * 0"  # Weekly at 2 AM Sunday
+  
+  # System maintenance
+  backup_enabled: true
+  backup_schedule: "0 3 * * *"  # Daily at 3 AM
+  
+  # Cleanup
+  cleanup_old_images: true
+  cleanup_after_days: 90
